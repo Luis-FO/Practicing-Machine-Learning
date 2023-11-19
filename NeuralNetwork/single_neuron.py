@@ -46,11 +46,11 @@ class Neuron:
 
     def SDG(self):
         print("Inicio")
-        n = 1000
+        n = 100
         for i in range(n):
             delta_nw, delta_nb = self.batch()
-            self.__weight -= 0.05*delta_nw/n
-            self.__bias -= 0.05*delta_nb/n
+            self.__weight -= 0.00005*delta_nw/n
+            self.__bias -= 0.00005*delta_nb/n
 
 
 
