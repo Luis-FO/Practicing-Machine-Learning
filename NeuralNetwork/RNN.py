@@ -29,6 +29,23 @@ class Network:
         for b, w in zip(self.__biases, self.__weights):
             a = np.dot(w, a) + b
         return a
+    
+    def SGD(self, training_data, epochs, batch_size, eta):
+        """
+            epochs: times that the nn is trained 
+            batch_size:
+        """
+        n = len(training_data)
+        print(type(training_data))
+        print(type(batch_size))
+        for j in range(epochs):
+            "Shuffle the data in each epochs"
+            print(f"Epoch {j}")
+            random.shuffle(training_data)
+            batches = [training_data[k:k+batch_size] for k in range(0, n, batch_size)]
+            for batch in batches:
+                pass
+            print(f"Epoch {j} FIM")
 
 def sigmoid(z):
 
