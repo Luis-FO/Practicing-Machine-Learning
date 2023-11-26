@@ -44,9 +44,28 @@ class Network:
             random.shuffle(training_data)
             batches = [training_data[k:k+batch_size] for k in range(0, n, batch_size)]
             for batch in batches:
-                pass
+                self.update_mini_batch(batch, eta)
             print(f"Epoch {j} FIM")
 
+    def update_mini_batch(self, batch, eta):
+        n_b = [np.zeros_like(bias) for bias in self.__biases] 
+        n_w = [np.zeros_like(weight) for weight in self.__weights]
+        # Gradient estimation for the batch
+        for x, y in batch:
+            # Ccalculate the gradient to all batch and sum in n_b and n_w
+            delta_n_b, delta_n_w = self.backprop(x, y)
+            n_b = [nb+b for nb, b in zip(n_b, delta_n_b)]
+            n_w = [nw+w for nw, w in zip(n_w, delta_n_w)]
+        
+        self.__biases = [bias - (eta*nb)/len(batch) for bias, nb in zip(self.__biases, n_b)]
+        self.__weights = [weight - (eta*nw)/len(batch) for weight, nw in zip(self.__weights, n_w)]
+
+    def backprop(self, x, y):
+        n_b = [np.zeros(bias.shape) for bias in self.__biases]
+        n_w = [np.zeros(weight.shape) for weight in self.__weights]
+        #TODO - Calculate backprop
+        return (n_b, n_w)
+        
 def sigmoid(z):
 
     return 1.0/(1.0+np.exp(-z))
