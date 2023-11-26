@@ -82,3 +82,5 @@ if __name__ == "__main__":
     y_test = one_hot_encode(y_test,outputs)
     X_train = [np.reshape(x, (2, 1)) for x in X_train]
     y_train = [np.reshape(y, (2, 1)) for y in y_train]
+    training_data = list(zip(X_train, y_train))
+    n.SGD(training_data=training_data, epochs=5, batch_size=20, eta = 3.0)
