@@ -63,9 +63,45 @@ class Network:
     def backprop(self, x, y):
         n_b = [np.zeros(bias.shape) for bias in self.__biases]
         n_w = [np.zeros(weight.shape) for weight in self.__weights]
-        #TODO - Calculate backprop
-        return (n_b, n_w)
+        activation = x
+        activations = [x]
+        zs = []
+        for b, w in zip(self.__biases, self.__weights):
+            # Calculate z = w*x+b
+            #print(w)
+            #print("\nwa: \n", np.dot(w, activation))
+            z = np.dot(w, activation) + b
+            #print("a",z.shape)
+            # Apepend z
+            zs.append(z)
+            # Calculate the activation of the next layer
+            activation = sigmoid(z)
+            #print("\na:\n", activation)
+            # Appende the next activation
+            activations.append(activation)
         
+        #print(activations[-1])
+        #print(sigmoid_prime(zs[-1]))
+        #print(self.dCx_da(activations[-1], y))
+        delta = self.dCx_da(activations[-1], y)*sigmoid_prime(zs[-1])
+        #print(delta)
+        #print(delta.shape)
+        n_b[-1] = delta
+        """
+        [delta1] * [a_l_minus_1_1][a_l_minus_1_2][a_l_minus_1_3] = [delta_nw11] [delta_nw12] [delta_nw13] 
+        [delta2]                                                   [delta_nw21] [delta_nw22] [delta_nw23]
+        """
+        n_w[-1] = np.dot(delta, np.transpose(activations[-2]))
+        #nabla_w[-1] = np.dot(delta, activations[-2].transpose())
+        for l in range(2, self.__num_layers):
+            delta = np.dot(np.transpose(self.__weights[-l+1]), delta)
+            n_b[-l] = delta
+            n_w[-l] = np.dot(delta, np.transpose(activations[-l-1]))
+
+        return (n_b, n_w)
+    
+    def dCx_da(self, a, y):
+        return (a - y)
 def sigmoid(z):
 
     return 1.0/(1.0+np.exp(-z))
