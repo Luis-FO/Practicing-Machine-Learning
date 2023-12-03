@@ -102,12 +102,21 @@ class Network:
     
     def dCx_da(self, a, y):
         return (a - y)
+    
 def sigmoid(z):
 
     return 1.0/(1.0+np.exp(-z))
 
 def sigmoid_prime(z):
     return sigmoid(z)*(1-sigmoid(z))
+
+
+def relu(z):
+    return np.maximum(0,z)
+
+
+def relu_prime(x):
+    return np.where(x > 0, 1, 0)
 
 if __name__ == "__main__":
     outputs = 2
