@@ -80,8 +80,8 @@ class Network:
             # Apepend z
             zs.append(z)
             # Calculate the activation of the next layer
-            # activation = sigmoid(z)
-            activation = relu(z)
+            activation = sigmoid(z)
+            #activation = relu(z)
             #print("\na:\n", activation)
             # Appende the next activation
             activations.append(activation)
@@ -89,7 +89,7 @@ class Network:
         #print(activations[-1])
         #print(sigmoid_prime(zs[-1]))
         #print(self.dCx_da(activations[-1], y))
-        delta = self.dCx_da(activations[-1], y)*relu_prime(zs[-1])
+        delta = self.dCx_da(activations[-1], y)*sigmoid_prime(zs[-1])
         #print(delta)
         #print(delta.shape)
         n_b[-1] = delta
@@ -132,7 +132,7 @@ def relu_prime(x):
 
 if __name__ == "__main__":
     outputs = 2
-    n = Network([2, 3, outputs])
+    n = Network([2, outputs])
     
     X_train, X_test, y_train, y_test = generate_data()
     y_train = one_hot_encode(y_train,outputs)
@@ -143,4 +143,4 @@ if __name__ == "__main__":
     #y_test = [np.reshape(y, (2, 1)) for y in y_test]
     training_data = list(zip(X_train, y_train))
     test_data = list(zip(X_test, y_test))
-    n.SGD(training_data=training_data, epochs=30, batch_size=1000, eta = 0.001, test_data=test_data)
+    n.SGD(training_data=training_data, epochs=30, batch_size=1000, eta = 3.0, test_data=test_data)

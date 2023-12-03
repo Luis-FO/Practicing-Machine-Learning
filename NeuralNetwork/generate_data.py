@@ -8,7 +8,10 @@ from sklearn.metrics.pairwise import euclidean_distances
 def generate_data(test_sz = 0.25):
     # Generate data with two groups
     X, y = make_blobs(n_samples=10000, centers=2, random_state=42, cluster_std=1.5)
-
+    #X = normalize_vector(X)
+    min = np.min(X)
+    max = np.max(X) 
+    X = ((2*(X - min))/(max-min))-1
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_sz, random_state=42)
     return X_train, X_test, y_train, y_test
