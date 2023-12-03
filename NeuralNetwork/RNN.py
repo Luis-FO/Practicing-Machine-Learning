@@ -29,23 +29,28 @@ class Network:
         for b, w in zip(self.__biases, self.__weights):
             a = np.dot(w, a) + b
         return a
-    
-    def SGD(self, training_data, epochs, batch_size, eta):
+
+    def SGD(self, training_data, epochs, batch_size, eta, test_data = None):
         """
             epochs: times that the nn is trained 
             batch_size:
         """
         n = len(training_data)
-        print(type(training_data))
-        print(type(batch_size))
         for j in range(epochs):
             "Shuffle the data in each epochs"
-            print(f"Epoch {j}")
+            # print(f"Epoch {j}")
             random.shuffle(training_data)
             batches = [training_data[k:k+batch_size] for k in range(0, n, batch_size)]
             for batch in batches:
                 self.update_mini_batch(batch, eta)
-            print(f"Epoch {j} FIM")
+            # print(f"Epoch {j} FIM")
+            
+            if test_data:
+                n_test = len(test_data)
+                print("Epoch {0}: {1} / {2}".format(
+                    j, self.accuracy_score(test_data), n_test))
+            else:
+                print("Epoch {0} complete".format(j))
 
     def update_mini_batch(self, batch, eta):
         n_b = [np.zeros_like(bias) for bias in self.__biases] 
@@ -75,7 +80,8 @@ class Network:
             # Apepend z
             zs.append(z)
             # Calculate the activation of the next layer
-            activation = sigmoid(z)
+            # activation = sigmoid(z)
+            activation = relu(z)
             #print("\na:\n", activation)
             # Appende the next activation
             activations.append(activation)
@@ -83,7 +89,7 @@ class Network:
         #print(activations[-1])
         #print(sigmoid_prime(zs[-1]))
         #print(self.dCx_da(activations[-1], y))
-        delta = self.dCx_da(activations[-1], y)*sigmoid_prime(zs[-1])
+        delta = self.dCx_da(activations[-1], y)*relu_prime(zs[-1])
         #print(delta)
         #print(delta.shape)
         n_b[-1] = delta
@@ -102,6 +108,12 @@ class Network:
     
     def dCx_da(self, a, y):
         return (a - y)
+    
+    def accuracy_score(self, test_data):
+        
+        #sself.feed_forward(test_data[])
+        test_results = [(np.argmax(self.feed_forward(x)), y) for (x, y) in test_data]
+        return sum(int(x == y) for (x, y) in test_results)
     
 def sigmoid(z):
 
@@ -124,8 +136,11 @@ if __name__ == "__main__":
     
     X_train, X_test, y_train, y_test = generate_data()
     y_train = one_hot_encode(y_train,outputs)
-    y_test = one_hot_encode(y_test,outputs)
+    #y_test = one_hot_encode(y_test,outputs)
     X_train = [np.reshape(x, (2, 1)) for x in X_train]
+    X_test = [np.reshape(x, (2, 1)) for x in X_test]
     y_train = [np.reshape(y, (2, 1)) for y in y_train]
+    #y_test = [np.reshape(y, (2, 1)) for y in y_test]
     training_data = list(zip(X_train, y_train))
-    n.SGD(training_data=training_data, epochs=5, batch_size=20, eta = 3.0)
+    test_data = list(zip(X_test, y_test))
+    n.SGD(training_data=training_data, epochs=30, batch_size=1000, eta = 0.001, test_data=test_data)
