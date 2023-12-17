@@ -42,8 +42,24 @@ class Individual():
                 fitness+=1
 
         return fitness
-    def mate(self):
-        pass
+    def mate(self, parent2):
+
+        child_chromosome = []
+
+        for gparent1, gparent2 in zip(self.chromosome, parent2.chromosome):
+
+            #[0, 1)
+            probability = random.random()
+
+            if probability < 0.45:
+                child_chromosome.append(gparent1)
+            elif probability < 0.90:
+                child_chromosome.append(gparent2)
+            else:
+                child_chromosome.append(self.mutated_genes())
+
+        return Individual(child_chromosome)
+    
     def __str__(self) -> str:
         return "".join(self.chromosome)
 
