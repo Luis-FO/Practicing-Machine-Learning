@@ -108,6 +108,7 @@ def main():
 
         generation_num+=1
 
+    print(f"Generation: {generation_num}\tString: {population[0].chromosome}\tFitness: {population[0].fitness}") 
 
 if __name__ == "__main__":
     main()
