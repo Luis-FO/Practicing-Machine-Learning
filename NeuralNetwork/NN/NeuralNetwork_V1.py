@@ -53,12 +53,13 @@ class Network:
                 print("Epoch {0} complete".format(j))
 
     def update_mini_batch(self, batch, eta):
-        n_b = [np.zeros_like(bias) for bias in self.__biases] 
+        n_b = [np.zeros_like(bias) for bias in self.__biases]
         n_w = [np.zeros_like(weight) for weight in self.__weights]
         # Gradient estimation for the batch
         for x, y in batch:
             # Ccalculate the gradient to all batch and sum in n_b and n_w
             delta_n_b, delta_n_w = self.backprop(x, y)
+
             n_b = [nb+b for nb, b in zip(n_b, delta_n_b)]
             n_w = [nw+w for nw, w in zip(n_w, delta_n_w)]
         
@@ -89,18 +90,24 @@ class Network:
         #print(activations[-1])
         #print(sigmoid_prime(zs[-1]))
         #print(self.dCx_da(activations[-1], y))
+        #BP1
         delta = self.dCx_da(activations[-1], y)*sigmoid_prime(zs[-1])
         #print(delta)
         #print(delta.shape)
+        #BP3
         n_b[-1] = delta
         """
         [delta1] * [a_l_minus_1_1][a_l_minus_1_2][a_l_minus_1_3] = [delta_nw11] [delta_nw12] [delta_nw13] 
         [delta2]                                                   [delta_nw21] [delta_nw22] [delta_nw23]
         """
+        #BP4
         n_w[-1] = np.dot(delta, np.transpose(activations[-2]))
         #nabla_w[-1] = np.dot(delta, activations[-2].transpose())
         for l in range(2, self.__num_layers):
-            delta = np.dot(np.transpose(self.__weights[-l+1]), delta)
+            z = zs[-l]
+            sp = sigmoid_prime(z)
+            #BP2
+            delta = np.dot(np.transpose(self.__weights[-l+1]), delta)*sp
             n_b[-l] = delta
             n_w[-l] = np.dot(delta, np.transpose(activations[-l-1]))
 
@@ -132,7 +139,7 @@ def relu_prime(x):
 
 if __name__ == "__main__":
     outputs = 2
-    n = Network([2, outputs])
+    n = Network([2, 3, outputs])
     
     X_train, X_test, y_train, y_test = generate_data()
     y_train = one_hot_encode(y_train,outputs)

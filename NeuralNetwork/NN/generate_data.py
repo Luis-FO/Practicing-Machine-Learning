@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import euclidean_distances
 
 # Function to generate 2D points labeled as groups A and B
-def generate_data(test_sz = 0.25):
+def generate_data(test_sz = 0.30):
     # Generate data with two groups
     X, y = make_blobs(n_samples=10000, centers=2, random_state=42, cluster_std=1.5)
     #X = normalize_vector(X)
