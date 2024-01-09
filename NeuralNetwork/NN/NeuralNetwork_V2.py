@@ -2,8 +2,29 @@ import random
 import numpy as np
 from generate_data import generate_data, one_hot_encode
 
+class QuadraticCost(object):
+
+    @staticmethod
+    def cost(a, y):
+        return ((a-y)**2)/2
+    
+    @staticmethod
+    def delta(a, y, z):
+        return (a - y)*sigmoid_prime(z)
+    
+
+class CrossEntropyCost(object):
+
+    @staticmethod
+    def cost(a, y):
+        return np.sum(np.nan_to_num(y*np.log(a) + (1 -y)*np.log(1-a)))
+    
+    @staticmethod
+    def delta(a, y, z):
+        return (a - y)
+
 class Network:
-    def __init__(self, sizes) -> None:
+    def __init__(self, sizes, cost = CrossEntropyCost) -> None:
         """sizes: each item is an layer, an it value is the number of neurons in this layes"""
         self.__num_layers = len(sizes)
         self.__sizes = sizes
@@ -18,7 +39,7 @@ class Network:
         """
         # ex: size[2,3,2] w = [(3x2),(2,3)]
         self.__weights = [np.random.randn(j, k) for k, j in zip(self.__sizes[:-1],self.__sizes[1:])]
-
+        self.cost = cost
 
     def feed_forward(self, a):
         """
@@ -95,7 +116,7 @@ class Network:
         #print(sigmoid_prime(zs[-1]))
         #print(self.dCx_da(activations[-1], y))
         #BP1
-        delta = self.dCx_da(activations[-1], y)*sigmoid_prime(zs[-1])
+        delta = (self.cost).delta(activations[-1], y, zs[-1])
         #print(delta)
         # print(delta.shape)
         # input()
