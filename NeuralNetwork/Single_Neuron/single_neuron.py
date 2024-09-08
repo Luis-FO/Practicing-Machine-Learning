@@ -1,3 +1,4 @@
+
 import numpy as np
 
 
@@ -9,11 +10,15 @@ class Neuron:
         print("Peso: ", self.__weight)
         #Training data
         # y = ax+b
-        w = 10
-        b = 10
+        w = 2
+        b = -0.8
 
-        self.n = 1000
-        self.x = np.arange(1, self.n)
+        self.n = 10000
+        self.x = np.linspace(-3, 3, self.n)
+
+        x_mean = np.mean(self.x, axis=0)
+        x_std = np.std(self.x, axis=0)
+        self.x = (self.x - x_mean) / x_std
         self.y = w*self.x + b
 
     @property
@@ -46,11 +51,10 @@ class Neuron:
 
     def SDG(self):
         print("Inicio")
-        n = 100
-        for i in range(n):
+        for i in range(self.n):
             delta_nw, delta_nb = self.batch()
-            self.__weight -= 0.00005*delta_nw/n
-            self.__bias -= 0.00005*delta_nb/n
+            self.__weight -= 0.1*delta_nw
+            self.__bias -= 0.1*delta_nb
 
 
 
@@ -66,7 +70,6 @@ class Neuron:
         print("B: ", self.__bias) 
         print("Delta w", -delta_nw/self.n)
         print("Delta b", -delta_nb/self.n)
-        input()
 
         return (delta_nw/self.n, delta_nb/self.n)
     

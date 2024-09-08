@@ -9,12 +9,12 @@ class Neuron:
         print("Peso: ", self.__weight)
         #Training data
         # y = ax+b
-        w = 0.5
-        b = -0.5
+        w = 10
+        b = 10
 
         self.n = 1000
         self.x = np.arange(1, self.n)
-        self.y = sigmoid(w*self.x + b)
+        self.y = w*self.x + b
 
     @property
     def bias(self):
@@ -31,12 +31,14 @@ class Neuron:
     def weight(self):
         return self.__weight
 
-    @weight.setter
+    @bias.setter
     def weight(self, new_weight):
         if str(new_weight).isnumeric():
             self.__weight = int(new_weight)
         else:
             print("Informe apenas números")
+
+
 
     def calculate_output(self, x):
         """x is an input"""
@@ -44,10 +46,11 @@ class Neuron:
 
     def SDG(self):
         print("Inicio")
-        for i in range(self.n):
+        n = 100
+        for i in range(n):
             delta_nw, delta_nb = self.batch()
-            self.__weight -= 0.1*delta_nw
-            self.__bias -= 0.1*delta_nb
+            self.__weight -= 0.00005*delta_nw/n
+            self.__bias -= 0.00005*delta_nb/n
 
 
 
@@ -61,16 +64,15 @@ class Neuron:
         print(50*"#")
         print("W: ", self.__weight)
         print("B: ", self.__bias) 
-        print("Delta ww", -delta_nw/self.n)
-        print("Delta bb", -delta_nb/self.n)
-        #input()
+        print("Delta w", -delta_nw/self.n)
+        print("Delta b", -delta_nb/self.n)
+        input()
 
         return (delta_nw/self.n, delta_nb/self.n)
     
     def backprop(self, x, y):
-        z = self.__weight*x + self.__bias
-        activation = sigmoid(z)
-        delta = (activation - y)*sigmoid_prime(z)
+        activation = self.__weight*x + self.__bias
+        delta = (activation - y)
         nabla_b =  delta
         nabla_w =  delta*x
         return nabla_w, nabla_b
@@ -81,15 +83,7 @@ class Neuron:
 
 
 
-def relu(z):
-    return np.maximum(0,z)
-
-
-def relu_prime(x):
-    return np.where(x > 0, 1, 0)
-
 def sigmoid(z):
-
     return 1.0/(1.0+np.exp(-z))
 
 def sigmoid_prime(z):
