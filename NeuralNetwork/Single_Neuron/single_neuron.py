@@ -51,7 +51,8 @@ class Neuron:
 
     def SDG(self):
         print("Inicio")
-        for i in range(self.n):
+        epochs = 1000
+        for i in range(epochs):
             delta_nw, delta_nb = self.batch()
             self.__weight -= 0.1*delta_nw
             self.__bias -= 0.1*delta_nb
@@ -83,7 +84,6 @@ class Neuron:
 
     def __str__(self) -> str:
         return f"Bias: {self.__bias}\nPeso: {self.__weight}\n"
-
 
 
 def sigmoid(z):
