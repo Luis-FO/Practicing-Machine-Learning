@@ -50,6 +50,7 @@ class Neuron:
         return sigmoid(self.weight*x + self.__bias)
 
     def SDG(self):
+        """WARNING: The SDG still needs to be implemented"""
         print("Inicio")
         epochs = 1000
         for i in range(epochs):
