@@ -78,7 +78,6 @@ def plot_results(V, policy, ph):
     ax1.set_xlabel('Capital')
     ax1.set_ylabel('Value Estimates')
 
-    # Gráfico da política final
     ax2.plot(policy, '-o')
     ax2.set_title(f"Final Policy (p_h = {ph})")
     ax2.set_xlabel('Capital')
@@ -88,6 +87,7 @@ def plot_results(V, policy, ph):
     plt.show()
 
 if __name__ == "__main__":
+    print("Luís Fernando de Oliveira")
     val_iter = ValueIteration(ph = 0.4, max_capital=100)
     ph_values = [0.4, 0.25, 0.55]
     theshold = 1e-20

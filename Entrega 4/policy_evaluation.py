@@ -54,13 +54,12 @@ class PolicyEvaluation:
 
 
 if __name__ == "__main__":
-
+    print("Luís Fernando de Oliveira")
     grid_size = (4, 4)
     theshold = 0.0001
     terminal_states = [(0, 0), (3, 3)]
     p_ev = PolicyEvaluation(terminal_states=terminal_states, grid_size=grid_size)
     V_pi = p_ev.run_policy_evaluation(theshold)
 
-    print("Estimated values of the states:\n")
     for row in V_pi:
         print(" | ".join(f"{v:6.2f}" for v in row))
