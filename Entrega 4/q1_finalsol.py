@@ -1,62 +1,66 @@
 import numpy as np
 
-# Constantes
-GRID_SIZE = 4
-NUM_ACTIONS = 4  # Acima, Abaixo, Esquerda, Direita
-TERMINAL_STATES = [(0, 0), (3, 3)]  # Estados terminais
-REWARD = -1  # Recompensa para cada movimento até alcançar o estado terminal
 
-# Define o modelo de transição para o gridworld
-def transition(state, action):
-    if state in TERMINAL_STATES:
-        return state  # Nenhuma transição a partir dos estados terminais
-    
-    row, col = state
-    if action == 0:  # Acima
-        new_state = (max(row - 1, 0), col)
-    elif action == 1:  # Abaixo
-        new_state = (min(row + 1, GRID_SIZE - 1), col)
-    elif action == 2:  # Esquerda
-        new_state = (row, max(col - 1, 0))
-    elif action == 3:  # Direita
-        new_state = (row, min(col + 1, GRID_SIZE - 1))
-    
-    return new_state
+class PolicyEvaluation:
+    def __init__(self, terminal_states, grid_size = (4, 4)):
+        
+        self.rows = grid_size[0]
+        self.columns = grid_size[1]
+        self.terminal_states = terminal_states   
+        self.actions_list = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+        self.v_current = np.zeros((self.rows, self.columns)) 
 
-# Avaliação de política com política equiprovável
-def policy_evaluation():
-    V_old = np.zeros((GRID_SIZE, GRID_SIZE))  # Função de valor inicializada com zeros
-    V_curr = np.zeros((GRID_SIZE, GRID_SIZE))
-    while True:
-        delta = 0
-        for row in range(GRID_SIZE):
-            for col in range(GRID_SIZE):
-                state = (row, col)
-                if state in TERMINAL_STATES:
-                    continue
-                
-                # Calcula o valor esperado sobre todas as ações equiprováveis
-                new_value = 0
-                for action in range(NUM_ACTIONS):
-                    next_state = transition(state, action)
-                    new_value += 0.25 * (REWARD + V_old[next_state[0], next_state[1]])  # Política equiprovável
-                
-                V_curr[row, col] = new_value
-                
-                # Calcula a diferença máxima (delta) entre o valor anterior e o novo valor
-                delta = max(delta, abs(V_old[row, col] - V_curr[row, col]))
-        print(V_curr)
-        input()
-        if delta < 0.01:  # Condição de convergência
-            break
-        V_old = V_curr.copy()
-    
-    return V_curr
+    def step(self, state, action):
 
-# Avaliar a política
-V_equiprobable = policy_evaluation()
+        row, col = state
+        shift_row, shift_col = action
+        new_row = min(max(row+shift_row, 0), self.rows - 1)
+        new_col = min(max(col+shift_col, 0), self.columns - 1)
+        new_state = (new_row, new_col)
 
-# Imprimir a função de valor como uma matriz
-print("Função de Valor (V_pi) com Política Equiprovável:")
-for row in V_equiprobable:
-    print(" | ".join(f"{v:6.2f}" for v in row))
+        return new_state
+
+    def run_policy_evaluation(self, theshold = 0.01):
+        V_new = self.v_current.copy()
+        
+        reward = -1 
+        while True:
+            delta = 0
+            for row in range(self.rows):
+                for col in range(self.columns):
+                    state = (row, col)
+                    if state in self.terminal_states:
+                        continue
+                    
+
+                    new_value = 0
+                    for action in self.actions_list:
+                        next_state = self.step(state, action)
+                        new_value += 0.25 * (reward + self.v_current[next_state[0], next_state[1]])
+                    
+                    V_new[row, col] = new_value
+                    
+
+                    delta = max(delta, abs(self.v_current[row, col] - V_new[row, col]))
+            #print(V_new)
+            self.v_current = V_new.copy()
+            if delta <= theshold: 
+                break
+            
+        return V_new
+
+    def reset_vmap(self):
+        self.v_current = np.zeros((self.rows, self.columns)) 
+
+
+if __name__ == "__main__":
+
+    grid_size = (4, 4)
+    theshold = 0.0001
+    terminal_states = [(0, 0), (3, 3)]
+    p_ev = PolicyEvaluation(terminal_states=terminal_states, grid_size=grid_size)
+    V_pi = p_ev.run_policy_evaluation(theshold)
+
+    print("Estimated values of the states:\n")
+    for row in V_pi:
+        print(" | ".join(f"{v:6.2f}" for v in row))
